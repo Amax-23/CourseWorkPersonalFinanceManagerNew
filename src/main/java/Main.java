@@ -1,3 +1,4 @@
+import ru.netology.Category;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -5,6 +6,7 @@ import java.net.Socket;
 
 public class Main {
     private static final int PORT = 8989;
+
     public static void main(String[] args) {
         Category category = new Category();
         category.readTsvFile();
@@ -25,6 +27,5 @@ public class Main {
             System.out.println("Не могу стартовать сервер!");
             e.printStackTrace();
         }
-
     }
 }
