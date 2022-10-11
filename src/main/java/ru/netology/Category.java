@@ -1,3 +1,4 @@
+package ru.netology;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -6,7 +7,7 @@ import org.json.simple.parser.ParseException;
 import java.io.*;
 import java.util.*;
 
-public class Category {
+public class Category implements Serializable {
     public Category() {
         food = new HashMap<>();
         clothing = new HashMap<>();
@@ -39,7 +40,6 @@ public class Category {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Произведен вызов метода - saveJsonFile");
     }
 
     public void readJsonFile(File jsonFile) {
@@ -66,12 +66,6 @@ public class Category {
         } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Произведен вызов метода - readJsonFile");
-        System.out.println(food);
-        System.out.println(clothing);
-        System.out.println(life);
-        System.out.println(finance);
-        System.out.println(others);
     }
 
     public void readTsvFile() {
@@ -93,7 +87,6 @@ public class Category {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Произведен вызов метода - readTsvFile");
     }
 
     public Map maxValueMap() {
@@ -144,8 +137,24 @@ public class Category {
 
         mapValueMax.put("category", category);
         mapValueMax.put("sum", sum);
-        System.out.println("Произведен вызов метода - maxValueMap");
         return mapValueMax;
+    }
+
+    public void saveLogServerBin() throws IOException {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("logServer.bin"))) {
+            out.writeObject(this);
+        }
+    }
+
+    public static Category loadFromBinFile() throws IOException {
+        System.out.println("Произведен вызов метода - loadFromBinFile");
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("logServer.bin"))) {
+            Category categoryObjekt = (Category) in.readObject();
+            in.close();
+            return categoryObjekt;
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 
