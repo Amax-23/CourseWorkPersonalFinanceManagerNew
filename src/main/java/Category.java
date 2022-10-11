@@ -39,7 +39,7 @@ public class Category {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Произведен вызов метода - saveJsonFile");
+        //System.out.println("Произведен вызов метода - saveJsonFile");
     }
 
     public void readJsonFile(File jsonFile) {
@@ -66,12 +66,12 @@ public class Category {
         } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Произведен вызов метода - readJsonFile");
-        System.out.println(food);
-        System.out.println(clothing);
-        System.out.println(life);
-        System.out.println(finance);
-        System.out.println(others);
+//        System.out.println("Произведен вызов метода - readJsonFile");
+//        System.out.println(food);
+//        System.out.println(clothing);
+//        System.out.println(life);
+//        System.out.println(finance);
+//        System.out.println(others);
     }
 
     public void readTsvFile() {
@@ -93,7 +93,7 @@ public class Category {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Произведен вызов метода - readTsvFile");
+       // System.out.println("Произведен вызов метода - readTsvFile");
     }
 
     public Map maxValueMap() {
@@ -144,7 +144,7 @@ public class Category {
 
         mapValueMax.put("category", category);
         mapValueMax.put("sum", sum);
-        System.out.println("Произведен вызов метода - maxValueMap");
+        //System.out.println("Произведен вызов метода - maxValueMap");
         return mapValueMax;
     }
 }
