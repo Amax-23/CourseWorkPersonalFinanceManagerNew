@@ -7,7 +7,7 @@ import org.json.simple.parser.ParseException;
 import java.io.*;
 import java.util.*;
 
-public class Category {
+public class Category implements Serializable {
     public Category() {
         food = new HashMap<>();
         clothing = new HashMap<>();
@@ -138,6 +138,23 @@ public class Category {
         mapValueMax.put("category", category);
         mapValueMax.put("sum", sum);
         return mapValueMax;
+    }
+
+    public void saveLogServerBin() throws IOException {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("logServer.bin"))) {
+            out.writeObject(this);
+        }
+    }
+
+    public static Category loadFromBinFile() throws IOException {
+        System.out.println("Произведен вызов метода - loadFromBinFile");
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("logServer.bin"))) {
+            Category categoryObjekt = (Category) in.readObject();
+            in.close();
+            return categoryObjekt;
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 

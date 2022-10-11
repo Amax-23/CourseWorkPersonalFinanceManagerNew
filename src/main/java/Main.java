@@ -3,13 +3,24 @@ import ru.netology.Category;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Main {
     private static final int PORT = 8989;
 
     public static void main(String[] args) {
         Category category = new Category();
-        category.readTsvFile();
+        if (Files.exists(Path.of("logServer.bin"))) {
+            try {
+                category = Category.loadFromBinFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            category.readTsvFile();
+        }
+
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("Server started!");
             while (true) {
@@ -21,6 +32,7 @@ public class Main {
                     category.readJsonFile(new File(in.readLine()));
                     category.saveJsonFile();
                     out.println(category.getOutJsonFile());
+                    category.saveLogServerBin();
                 }
             }
         } catch (IOException e) {
