@@ -25,22 +25,28 @@ public class CategoryTest {
 
     @Test
     public void maxValueMapTest() {
+        // для тестов использовал testJson.json с содержанием -
+        // {"title": "булка", "date": "2022.02.08", "sum": 70000}
         Assertions.assertEquals(2, category.mapValueMax.size());
         Assertions.assertEquals("еда", category.mapValueMax.get("category"));
         Assertions.assertEquals(70000L, (Long) category.mapValueMax.get("sum"));
         category.readJsonFile(testJson);
         category.maxValueMap();
+        // после добавления аналогичной покупки итоговая сумма возрастает
         Assertions.assertEquals("еда", category.mapValueMax.get("category"));
         Assertions.assertEquals(140000L, (Long) category.mapValueMax.get("sum"));
     }
 
     @Test
     void readTsvFileTest() {
+        // для тестов использовал categories.tsv с содержанием на 8 строк
         Assertions.assertEquals(8, category.categoriesTsv.size());
     }
 
     @Test
     void readJsonFileTest() {
+        // для тестов использовал testJson.json с содержанием -
+        // {"title": "булка", "date": "2022.02.08", "sum": 70000}
         Assertions.assertEquals(70000L, (Long) category.categoryJson.get("еда"));
     }
 }
