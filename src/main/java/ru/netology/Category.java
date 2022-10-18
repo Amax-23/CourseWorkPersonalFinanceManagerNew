@@ -1,5 +1,7 @@
 package ru.netology;
 
+
+import edu.emory.mathcs.backport.java.util.Collections;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -9,59 +11,53 @@ import java.util.*;
 
 public class Category implements Serializable {
     public Category() {
-        food = new HashMap<>();
-        clothing = new HashMap<>();
-        life = new HashMap<>();
-        finance = new HashMap<>();
-        others = new HashMap<>();
+        categoriesTsv = new HashMap<>();
+        categoryJson = new HashMap<>();
         mapValueMax = new HashMap<>();
-        outJsonFile = new File("answer.json");
+        outJsonFile = "answer.json";
     }
 
-    Map<String, Long> food;
-    Map<String, Long> clothing;
-    Map<String, Long> life;
-    Map<String, Long> finance;
-    Map<String, Long> others;
-    Map mapValueMax;
-    private final File outJsonFile;
-    private String category;
-    private long sum;
+    protected Map categoriesTsv;
+    protected Map categoryJson;
+    protected Map mapValueMax;
+    private final String outJsonFile;
 
-    public File getOutJsonFile() {
+
+    public String getOutJsonFile() {
         return outJsonFile;
     }
 
     public void saveJsonFile() {
         JSONObject obj = new JSONObject();
         obj.put("maxCategory", maxValueMap());
-        try (FileWriter file = new FileWriter(outJsonFile)) {
+        try (PrintWriter file = new PrintWriter(outJsonFile)) {
             file.write(obj.toJSONString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void readJsonFile(File jsonFile) {
+    public void readJsonFile(String jsonFile) {
         JSONParser parser = new JSONParser();
         try {
             Object obj = parser.parse(new FileReader(jsonFile));
             JSONObject jsonObject = (JSONObject) obj;
             String title = (String) jsonObject.get("title");
             long sum = (Long) jsonObject.get("sum");
-            if (food.containsKey(title)) {
-                food.put(title, food.get(title) + sum);
-            } else if (clothing.containsKey(title)) {
-                clothing.put(title, clothing.get(title) + sum);
-            } else if (life.containsKey(title)) {
-                life.put(title, life.get(title) + sum);
-            } else if (finance.containsKey(title)) {
-                finance.put(title, finance.get(title) + sum);
-            } else if (others.containsKey(title)) {
-                others.put(title, others.get(title) + sum);
-            } else if (others.isEmpty() || !others.containsKey(title)) {
-                others.put(title, sum);
+            if (categoriesTsv.containsKey(title)) {
+                if (!categoryJson.containsKey(categoriesTsv.get(title))) {
+                    categoryJson.put(categoriesTsv.get(title), sum);
+                } else {
+                    Long sumOld = (Long) categoryJson.get(categoriesTsv.get(title));
+                    categoryJson.put(categoriesTsv.get(title), sumOld + sum);
+                }
+            } else if (categoryJson.containsKey("другое")) {
+                long sumOld = (long) categoryJson.get("другое");
+                categoryJson.put("другое", sumOld + sum);
+            } else {
+                categoryJson.put("другое", sum);
             }
+            //System.out.println(categoryJson);
 
         } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
@@ -73,82 +69,38 @@ public class Category implements Serializable {
             String dataTsv = tsVFile.readLine();
             while (dataTsv != null) {
                 String[] dataArray = dataTsv.split("\t");
-                if (dataArray[1].equals("еда")) {
-                    food.put(dataArray[0], 0L);
-                } else if (dataArray[1].equals("одежда")) {
-                    clothing.put(dataArray[0], 0L);
-                } else if (dataArray[1].equals("быт")) {
-                    life.put(dataArray[0], 0L);
-                } else if (dataArray[1].equals("финансы")) {
-                    finance.put(dataArray[0], 0L);
-                } else others.put(dataArray[1], 0L);
+                categoriesTsv.put(dataArray[0], dataArray[1]);
                 dataTsv = tsVFile.readLine();
             }
+            //System.out.println(categoriesTsv);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public Map maxValueMap() {
-        Map<String, Long> mapMax = new HashMap<>();
-        if (!food.isEmpty()) {
-            long sumMaxMap = 0;
-            for (Long value : food.values()) {
-                sumMaxMap += value;
-            }
-            mapMax.put("еда", sumMaxMap);
-        }
-        if (!clothing.isEmpty()) {
-            long sumMaxMap = 0;
-            for (Long value : clothing.values()) {
-                sumMaxMap += value;
-            }
-            mapMax.put("одежда", sumMaxMap);
-        }
-        if (!life.isEmpty()) {
-            long sumMaxMap = 0;
-            for (Long value : life.values()) {
-                sumMaxMap += value;
-            }
-            mapMax.put("быт", sumMaxMap);
-        }
-        if (!finance.isEmpty()) {
-            long sumMaxMap = 0;
-            for (Long value : finance.values()) {
-                sumMaxMap += value;
-            }
-            mapMax.put("финансы", sumMaxMap);
-        }
-        if (!others.isEmpty()) {
-            long sumMaxMap = 0;
-            for (Long value : others.values()) {
-                sumMaxMap += value;
-            }
-            mapMax.put("другое", sumMaxMap);
-        }
-        for (Map.Entry<String, Long> entry : mapMax.entrySet()) {
-            String key = entry.getKey();
-            Long value = entry.getValue();
-            if (value > sum) {
-                sum = value;
-                category = key;
+        String category = null;
+        long sum = (long) Collections.max(categoryJson.values());
+        for (Object s : categoryJson.keySet()) {
+            if (categoryJson.get(s).equals(sum)) {
+                category = (String) s;
             }
         }
-
         mapValueMax.put("category", category);
         mapValueMax.put("sum", sum);
+        //System.out.println(mapValueMax);
         return mapValueMax;
     }
 
-    public void saveLogServerBin() throws IOException {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("logServer.bin"))) {
+    public void saveLogServerBin(File dataLogFile) throws IOException {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(dataLogFile))) {
             out.writeObject(this);
         }
     }
 
-    public static Category loadFromBinFile() throws IOException {
-        System.out.println("Произведен вызов метода - loadFromBinFile");
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("logServer.bin"))) {
+    public static Category loadFromBinFile(File dataLogFile) throws IOException {
+        System.out.println("Method call made - loadFromBinFile");
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(dataLogFile))) {
             Category categoryObjekt = (Category) in.readObject();
             in.close();
             return categoryObjekt;

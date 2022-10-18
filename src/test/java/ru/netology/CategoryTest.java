@@ -6,12 +6,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 
 
-import java.io.File;
-
-
 public class CategoryTest {
     Category category = new Category();
-    File testJson = new File("testJson.json");
+    String testJson = "testJson.json";
 
     @BeforeEach
     void setUp() {
@@ -30,23 +27,20 @@ public class CategoryTest {
     public void maxValueMapTest() {
         Assertions.assertEquals(2, category.mapValueMax.size());
         Assertions.assertEquals("еда", category.mapValueMax.get("category"));
-        Assertions.assertEquals(71000L, (Long) category.mapValueMax.get("sum"));
+        Assertions.assertEquals(70000L, (Long) category.mapValueMax.get("sum"));
         category.readJsonFile(testJson);
         category.maxValueMap();
         Assertions.assertEquals("еда", category.mapValueMax.get("category"));
-        Assertions.assertEquals(142000L, (Long) category.mapValueMax.get("sum"));
+        Assertions.assertEquals(140000L, (Long) category.mapValueMax.get("sum"));
     }
 
     @Test
     void readTsvFileTest() {
-        Assertions.assertEquals(4, category.food.size());
-        Assertions.assertEquals(2, category.clothing.size());
-        Assertions.assertEquals(1, category.life.size());
-        Assertions.assertEquals(1, category.finance.size());
+        Assertions.assertEquals(8, category.categoriesTsv.size());
     }
 
     @Test
     void readJsonFileTest() {
-        Assertions.assertEquals(71000L, (Long) category.food.get("булка"));
+        Assertions.assertEquals(70000L, (Long) category.categoryJson.get("еда"));
     }
 }
