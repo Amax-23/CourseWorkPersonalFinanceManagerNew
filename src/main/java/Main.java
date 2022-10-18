@@ -4,23 +4,23 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
-import java.nio.file.Path;
+
 
 public class Main {
     private static final int PORT = 8989;
+    private static File dataLogFile = new File("data.bin");
 
     public static void main(String[] args) {
         Category category = new Category();
-        if (Files.exists(Path.of("logServer.bin"))) {
+        if (Files.exists(dataLogFile.toPath())) {
             try {
-                category = Category.loadFromBinFile();
+                category = Category.loadFromBinFile(dataLogFile);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         } else {
             category.readTsvFile();
         }
-
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("Server started!");
             while (true) {
@@ -29,10 +29,10 @@ public class Main {
                      BufferedReader in = new BufferedReader(new InputStreamReader(clientSocet
                              .getInputStream()))) {
                     System.out.println("New connection accepted!");
-                    category.readJsonFile(new File(in.readLine()));
+                    category.readJsonFile(in.readLine());
                     category.saveJsonFile();
                     out.println(category.getOutJsonFile());
-                    category.saveLogServerBin();
+                    category.saveLogServerBin(dataLogFile);
                 }
             }
         } catch (IOException e) {
