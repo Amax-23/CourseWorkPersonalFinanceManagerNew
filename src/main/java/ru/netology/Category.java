@@ -17,9 +17,9 @@ public class Category implements Serializable {
         outJsonFile = "answer.json";
     }
 
-    protected Map categoriesTsv;
-    protected Map categoryJson;
-    protected Map mapValueMax;
+    protected Map<String, String> categoriesTsv;
+    protected Map<String, Long> categoryJson;
+    protected Map <String, Object>  mapValueMax;
     private final String outJsonFile;
 
 
@@ -78,7 +78,7 @@ public class Category implements Serializable {
         }
     }
 
-    public Map maxValueMap() {
+    public Map<String, Object> maxValueMap() {
         String category = null;
         long sum = (long) Collections.max(categoryJson.values());
         for (Object s : categoryJson.keySet()) {

@@ -8,7 +8,7 @@ import java.nio.file.Files;
 
 public class Main {
     private static final int PORT = 8989;
-    private static File dataLogFile = new File("data.bin");
+    private static final File dataLogFile = new File("data.bin");
 
     public static void main(String[] args) {
         Category category = new Category();
